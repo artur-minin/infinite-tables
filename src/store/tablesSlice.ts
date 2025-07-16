@@ -7,48 +7,7 @@ import {
 import { Cell, Table } from '@/lib/types'
 import { RootState } from '@/store/types.ts'
 
-const tables: Table[] = [
-  {
-    id: '123',
-    position: 2,
-    cells: [
-      ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', '11', 'New York'],
-      ['tandy', 'miller', '11', 'Los Angeles'],
-      ['joe', 'dirte', '11', 'New Jersey']
-    ]
-  },
-  {
-    id: '345',
-    position: 1,
-    cells: [
-      ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', '22', 'New York'],
-      ['tandy', 'miller', '22', 'Los Angeles'],
-      ['joe', 'dirte', '22', 'New Jersey']
-    ]
-  },
-  {
-    id: '678',
-    position: 0,
-    cells: [
-      ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', '33', 'New York'],
-      ['tandy', 'miller', '33', 'Los Angeles'],
-      ['joe', 'dirte', '33', 'New Jersey']
-    ]
-  },
-  {
-    id: '912',
-    position: 3,
-    cells: [
-      ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', '44', 'New York'],
-      ['tandy', 'miller', '44', 'Los Angeles'],
-      ['joe', 'dirte', '44', 'New Jersey']
-    ]
-  }
-]
+const tables: Table[] = []
 
 const tablesAdapter = createEntityAdapter<Table>({
   sortComparer: (a, b) =>
@@ -74,7 +33,7 @@ export const tablesSlice = createSlice({
     copyTable: create.reducer((state, action: PayloadAction<Table['id']>) => {
       const copiedTable = state.entities[action.payload]
       if (copiedTable) {
-        // Get all tables that need position increment
+        // Increment positions of tables after the copied table
         const tablesToUpdate = Object.values(state.entities)
           .filter((table) => table && table.position > copiedTable.position)
           .map((table) => ({
@@ -83,7 +42,6 @@ export const tablesSlice = createSlice({
           }))
         tablesAdapter.updateMany(state, tablesToUpdate)
 
-        // Create and add the new table
         const newTable: Table = {
           ...copiedTable,
           id: Date.now().toString(),
@@ -100,7 +58,7 @@ export const tablesSlice = createSlice({
         return state
       }
 
-      // Get all tables that need position decrement
+      // Decrement positions of tables after the copied table
       const tablesToUpdate = Object.values(state.entities)
         .filter((table) => table && table.position > deletedTable.position)
         .map((table) => ({
