@@ -1,16 +1,29 @@
-# Installation
+# Infinite tables
 
-- Install [pnpm](https://pnpm.io/installation)
+A modern React application for creating and managing interactive data tables. Features drag-and-drop functionality, real-time editing, and customizable themes - perfect for organizing and visualizing your data with a sleek, responsive interface.
 
-### pnpm
+## Features
 
-```sh
-cd myapp
-pnpm install
-pnpm dev
-```
+- 📊 Draggable data tables with:
+  - Dynamic column creation
+  - Inline cell editing
+  - Copy/delete functionality
+  - Column sorting
+- 🎨 Multiple themes (light, dark, rose, coffee, cyberpunk)
 
-## Commands
+# Prerequisites
+
+- Node.js 22+
+- pnpm 10+
+
+# Running locally
+
+1. Clone the repository
+2. Install [pnpm](https://pnpm.io/installation)
+3. Install dependencies: `pnpm install`
+4. Run the development server: `pnpm dev`
+
+# Available commands
 
 ```bash
 pnpm dev             # start development server
