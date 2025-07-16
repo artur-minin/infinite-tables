@@ -24,17 +24,18 @@ export function DraggableTables() {
   const containerRef = useRef<HTMLDivElement>(null)
   console.log({ tables, slottedItems })
 
-  useEffect(
-    () =>
-      utils.dynamicSwapy(
-        swapyRef.current,
-        tables,
-        'id',
-        slotItemMap,
-        setSlotItemMap
-      ),
-    [tables]
-  )
+  useEffect(() => {
+    utils.dynamicSwapy(
+      swapyRef.current,
+      tables,
+      'id',
+      slotItemMap,
+      setSlotItemMap
+    )
+
+    // Reinitialize slotItemMap when tables change (e.g., when a table is copied)
+    setSlotItemMap(utils.initSlotItemMap(tables, 'id'))
+  }, [tables])
 
   useEffect(() => {
     swapyRef.current = createSwapy(containerRef.current!, {
@@ -102,32 +103,27 @@ export function DraggableTables() {
         ref={containerRef}
         className="flex flex-wrap gap-[var(--gap-between-tables)] p-4"
       >
-        {slottedItems
-          .sort(
-            ({ item: itemA }, { item: itemB }) =>
-              (itemA?.position ?? 0) - (itemB?.position ?? 0)
-          )
-          .map(({ slotId, itemId, item }) => {
-            return item?.id ? (
+        {slottedItems.map(({ slotId, itemId, item }) => {
+          return item?.id ? (
+            <div
+              key={slotId}
+              data-swapy-slot={slotId}
+              className="min-w-[var(--table-width)] flex-1 cursor-grab [&[data-swapy-highlighted]]:bg-green-200"
+            >
               <div
-                key={slotId}
-                data-swapy-slot={slotId}
-                className="min-w-[var(--table-width)] flex-1 cursor-grab [&[data-swapy-highlighted]]:bg-green-200"
+                key={itemId}
+                data-swapy-item={itemId}
+                className="[&[data-swapy-dragging]]:cursor-grabbing"
               >
-                <div
-                  key={itemId}
-                  data-swapy-item={itemId}
-                  className="[&[data-swapy-dragging]]:cursor-grabbing"
-                >
-                  <DataTable
-                    tableId={item.id}
-                    onCopy={handleCopyTable}
-                    onDelete={handleDeleteTable}
-                  />
-                </div>
+                <DataTable
+                  tableId={item.id}
+                  onCopy={handleCopyTable}
+                  onDelete={handleDeleteTable}
+                />
               </div>
-            ) : null
-          })}
+            </div>
+          ) : null
+        })}
       </div>
     </>
   )
