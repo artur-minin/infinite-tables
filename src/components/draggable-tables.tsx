@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { toast } from 'sonner'
 import { SlotItemMapArray, Swapy, utils, createSwapy } from 'swapy'
 
-import { CreateTableButton } from '@/components/create-table-button.tsx'
 import { DataTable } from '@/components/data-table'
-import { ThemeSelector } from '@/components/theme-selector.tsx'
 import { selectAllTables, swapTablePositions, useAppDispatch } from '@/store'
 
 export function DraggableTables() {
@@ -32,10 +29,13 @@ export function DraggableTables() {
       slotItemMap,
       setSlotItemMap
     )
-
-    // Reinitialize slotItemMap when tables change (e.g., when a table is copied)
-    setSlotItemMap(utils.initSlotItemMap(tables, 'id'))
   }, [tables])
+
+  useEffect(() => {
+    // Reinitialize slotItemMap when tables change (e.g., when a table is copied)
+    swapyRef?.current?.update()
+    setSlotItemMap(utils.initSlotItemMap(tables, 'id'))
+  }, [tables.length])
 
   useEffect(() => {
     swapyRef.current = createSwapy(containerRef.current!, {
@@ -76,55 +76,28 @@ export function DraggableTables() {
     }
   }, [])
 
-  const handleCreateTable = useCallback(() => {
-    swapyRef?.current?.update()
-    toast.success('Table has been created')
-  }, [])
-
-  const handleCopyTable = useCallback(() => {
-    swapyRef?.current?.update()
-    toast.success('Table has been copied')
-  }, [])
-
-  const handleDeleteTable = useCallback(() => {
-    swapyRef?.current?.update()
-    toast.success('Table has been deleted')
-  }, [])
-
   return (
-    <>
-      <div className="flex items-center justify-between p-4">
-        <CreateTableButton onCreate={handleCreateTable} />
-
-        <ThemeSelector />
-      </div>
-
-      <div
-        ref={containerRef}
-        className="flex flex-wrap gap-[var(--gap-between-tables)] p-4"
-      >
-        {slottedItems.map(({ slotId, itemId, item }) => {
-          return item?.id ? (
+    <div
+      ref={containerRef}
+      className="flex flex-wrap gap-[var(--gap-between-tables)]"
+    >
+      {slottedItems.map(({ slotId, itemId, item }) => {
+        return item?.id ? (
+          <div
+            key={slotId}
+            data-swapy-slot={slotId}
+            className="min-w-[var(--table-width)] flex-1 cursor-grab"
+          >
             <div
-              key={slotId}
-              data-swapy-slot={slotId}
-              className="min-w-[var(--table-width)] flex-1 cursor-grab [&[data-swapy-highlighted]]:bg-green-200"
+              key={itemId}
+              data-swapy-item={itemId}
+              className="[&[data-swapy-dragging]]:cursor-grabbing"
             >
-              <div
-                key={itemId}
-                data-swapy-item={itemId}
-                className="[&[data-swapy-dragging]]:cursor-grabbing"
-              >
-                <DataTable
-                  tableId={item.id}
-                  onCopy={handleCopyTable}
-                  onDelete={handleDeleteTable}
-                />
-              </div>
+              <DataTable tableId={item.id} />
             </div>
-          ) : null
-        })}
-      </div>
-    </>
+          </div>
+        ) : null
+      })}
+    </div>
   )
 }

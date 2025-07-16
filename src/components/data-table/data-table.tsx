@@ -10,6 +10,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { File, Trash } from 'lucide-react'
+import { toast } from 'sonner'
 
 import {
   AlertDialog,
@@ -49,15 +50,9 @@ import { DataTableColumnHeader } from './data-table-column-header.tsx'
 
 interface DataTableProps {
   tableId: TableType['id']
-  onCopy?: (tableId: TableType['id']) => void
-  onDelete?: (tableId: TableType['id']) => void
 }
 
-export const DataTable = memo(function DataTable({
-  tableId,
-  onCopy,
-  onDelete
-}: DataTableProps) {
+export const DataTable = memo(function DataTable({ tableId }: DataTableProps) {
   const dispatch = useDispatch()
 
   const [sorting, setSorting] = useState<SortingState>([])
@@ -109,7 +104,7 @@ export const DataTable = memo(function DataTable({
 
         return (
           <Input
-            className="min-h-12 w-full"
+            className="focus-visible:bg-table-cell-bg-focus min-h-10 w-full !rounded-none border-[0.5px] p-2.5 focus-visible:shadow-[inset_0_0_0_1px_var(--table-cell-border-focus)] focus-visible:ring-0"
             defaultValue={initialValue}
             onBlur={onBlur}
           />
@@ -121,20 +116,20 @@ export const DataTable = memo(function DataTable({
 
         const handleCopyTable = () => {
           dispatch(copyTable(tableId))
-          onCopy?.(tableId)
+          toast.success('Table has been copied')
         }
 
         const handleDeleteTable = () => {
           dispatch(removeTable(tableId))
-          onDelete?.(tableId)
+          toast.success('Table has been deleted')
         }
 
         return (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-0.5">
             <DataTableColumnHeader
               column={column}
               title={column.id}
-              className="cursor-pointer"
+              className="hover:bg-primary-hover hover:text-background cursor-pointer"
             />
 
             {isLastColumn && (
@@ -143,7 +138,7 @@ export const DataTable = memo(function DataTable({
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="cursor-pointer"
+                      className="hover:bg-primary-hover hover:text-background cursor-pointer"
                       onClick={handleCopyTable}
                     >
                       <File className="size-4" />
@@ -158,7 +153,10 @@ export const DataTable = memo(function DataTable({
                   <AlertDialogTrigger>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" className="cursor-pointer">
+                        <Button
+                          variant="ghost"
+                          className="hover:bg-primary-hover hover:text-background cursor-pointer"
+                        >
                           <Trash className="size-4" />
                         </Button>
                       </TooltipTrigger>
@@ -195,7 +193,7 @@ export const DataTable = memo(function DataTable({
         )
       }
     }),
-    [dispatch, onCopy, onDelete, tableId]
+    [dispatch, tableId]
   )
 
   const table = useReactTable({
@@ -211,7 +209,7 @@ export const DataTable = memo(function DataTable({
   })
 
   return (
-    <div className="rounded-md border">
+    <div className="border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
