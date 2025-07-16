@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { useMemo } from 'react'
 
 import { createColumnHelper } from '@tanstack/react-table'
@@ -27,7 +26,6 @@ const defaultData: Person[] = [
 ]
 
 function App() {
-  const [data, _setData] = React.useState(() => [...defaultData])
   const columnHelper = createColumnHelper<Person>()
 
   const columns = useMemo(
@@ -49,13 +47,10 @@ function App() {
   )
 
   return (
-    <div className="flex flex-wrap gap-[var(--gap-between-columns)] p-4">
+    <div className="flex flex-wrap gap-[var(--gap-between-tables)] p-4">
       {[1, 2, 3, 4].map((i) => (
-        <div
-          key={`column-${i}`}
-          className="flex-basis[var(--one-column-width)] flex-1"
-        >
-          <Table columns={columns} data={data} />
+        <div key={`column-${i}`} className="min-w-[var(--table-width)] flex-1">
+          <Table columns={columns} initialData={defaultData} />
         </div>
       ))}
     </div>
