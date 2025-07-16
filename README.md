@@ -18,7 +18,7 @@ pnpm build           # build production bundle to 'dist' directly
 pnpm preview         # launch server for production bundle in local
 pnpm lint            # run eslint
 pnpm lint:fix        # run eslint with --fix option
-pnpm prettier        # run prettier for json|yml|css|md|mdx files
+pnpm prettier        # run prettier
 pnpm typecheck       # run TypeScript compiler check
-pnpm clean           # remove 'node_modules' 'yarn.lock' 'dist' completely
+pnpm clean           # remove 'node_modules' 'pnpm-lock.yaml' 'dist' completely
 ```
