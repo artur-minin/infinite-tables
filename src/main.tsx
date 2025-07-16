@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 
 import { createRoot } from 'react-dom/client'
 
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '@/lib/theme-provider'
 import { store } from '@/store'
 
 import App from './App.tsx'
