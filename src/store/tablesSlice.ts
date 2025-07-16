@@ -56,82 +56,101 @@ const tables: Table[] = [
 ]
 
 const tablesAdapter = createEntityAdapter<Table>({
-  sortComparer: (a, b) => a.position - b.position
+  sortComparer: (a, b) =>
+    a.position.toString().localeCompare(b.position.toString())
 })
 
 export const tablesSlice = createSlice({
   name: 'tables',
   initialState: tablesAdapter.setAll(tablesAdapter.getInitialState(), tables),
   reducers: (create) => ({
-    addTable: create.reducer((state, action: PayloadAction<Table>) => {
-      const newTable = { ...action.payload, id: Date.now().toString() }
-      return tablesAdapter.addOne(state, newTable)
+    addTable: create.reducer((state, action: PayloadAction<string[]>) => {
+      const tableHeader = action.payload
+      const tableBody = Array(3)
+        .fill(null)
+        .map(() => Array(tableHeader.length).fill(''))
+
+      return tablesAdapter.addOne(state, {
+        id: Date.now().toString(),
+        position: state.ids.length,
+        cells: [tableHeader, ...tableBody]
+      })
     }),
-    updateTable: tablesAdapter.updateOne,
+    copyTable: create.reducer((state, action: PayloadAction<string>) => {
+      const originalTable = state.entities[action.payload]
+      if (originalTable) {
+        console.log({ originalTablePosition: originalTable.position })
+        const newTable: Table = {
+          ...originalTable,
+          id: Date.now().toString(),
+          position: originalTable.position + 1
+        }
+        return tablesAdapter.addOne(state, newTable)
+      }
+
+      return state
+    }),
     removeTable: tablesAdapter.removeOne,
     updateTableCell: create.reducer(
       (
         state,
         action: PayloadAction<{
-          tableId: number
+          tableId: string
           rowIndex: number
           columnIndex: number
           value: string | number
         }>
       ) => {
-        const { tableId, rowIndex, columnIndex, value } = action.payload
-        const table = state.entities[tableId]
+        const {
+          tableId,
+          rowIndex: rowIndexToUpdate,
+          columnIndex: columnIndexToUpdate,
+          value: updatedValue
+        } = action.payload
 
-        const isCellExist = table?.cells[rowIndex]?.[columnIndex] !== undefined
-        if (isCellExist) {
-          table.cells[rowIndex][columnIndex] = value
+        const table = state.entities[tableId]
+        const isCellExist =
+          table?.cells[rowIndexToUpdate]?.[columnIndexToUpdate] !== undefined
+        if (!isCellExist) {
+          return state
         }
+
+        tablesAdapter.updateOne(state, {
+          id: tableId,
+          changes: {
+            cells: table.cells.map((row, rowIndex) => {
+              if (rowIndexToUpdate === rowIndex) {
+                return row.map((oldValue, columnIndex) =>
+                  columnIndexToUpdate === columnIndex ? updatedValue : oldValue
+                )
+              }
+
+              return row
+            })
+          }
+        })
       }
     ),
     swapTablePositions: create.reducer(
       (
         state,
         action: PayloadAction<{
-          tableId1: number
-          tableId2: number
+          tableId1: string
+          tableId2: string
         }>
       ) => {
         const { tableId1, tableId2 } = action.payload
         const table1 = state.entities[tableId1]
         const table2 = state.entities[tableId2]
 
-        if (table1 && table2) {
-          const tempPosition = table1.position
-          table1.position = table2.position
-          table2.position = tempPosition
+        if (!table1 || !table2) {
+          return state
         }
-      }
-    ),
-    copyTable: create.reducer((state, action: PayloadAction<number>) => {
-      const existingEntity = state.entities[action.payload]
-      if (existingEntity) {
-        const updatedEntity = {
-          ...existingEntity
-          // order: existingEntity.order + 1
-        }
-        return tablesAdapter.updateOne(state, {
-          id: Date.now().toString(),
-          changes: updatedEntity
-        })
-      }
-      return state
-    }),
-    copyTableAlternative: create.reducer(
-      (state, action: PayloadAction<number>) => {
-        const originalEntity = state.entities[action.payload]
-        if (originalEntity) {
-          const newEntity: Table = {
-            ...originalEntity,
-            id: Date.now().toString()
-          }
-          return tablesAdapter.addOne(state, newEntity)
-        }
-        return state
+
+        tablesAdapter.updateMany(state, [
+          { id: tableId1, changes: { position: table2.position } },
+          { id: tableId2, changes: { position: table1.position } }
+        ])
       }
     )
   })
@@ -139,37 +158,18 @@ export const tablesSlice = createSlice({
 
 export const {
   addTable,
-  updateTable,
   removeTable,
   swapTablePositions,
   updateTableCell,
-  copyTable,
-  copyTableAlternative
+  copyTable
 } = tablesSlice.actions
 
-// Add this selector to transform the normalized state into the format expected by DataTable
 export const selectTableDataById = (tableId: string) => (state: RootState) => {
   const table = selectTableById(state, tableId)
   if (!table) return []
 
-  // Return the data array directly as DataTable expects
   return table.cells
 }
 
-// Add a selector to get all tables in the format expected by DataTable
-export const selectAllTablesFormatted = (state: RootState) => {
-  const tables = selectAllTables(state)
-  return tables.map((table) => ({
-    id: table.id,
-    position: table.position,
-    data: table.cells
-  }))
-}
-
-export const {
-  selectById: selectTableById,
-  selectIds: selectTableIds,
-  selectEntities: selectTableEntities,
-  selectAll: selectAllTables,
-  selectTotal: selectTotalTables
-} = tablesAdapter.getSelectors((state: RootState) => state.tables)
+export const { selectById: selectTableById, selectAll: selectAllTables } =
+  tablesAdapter.getSelectors((state: RootState) => state.tables)
