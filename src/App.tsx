@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux'
 
-import { CreateTableButton } from '@/components/create-table-button.tsx'
-import { DraggableTables } from '@/components/draggable-tables.tsx'
-import { ThemeSelector } from '@/components/theme-selector.tsx'
-import { Toaster } from '@/components/ui/sonner.tsx'
+import { CreateTableButton } from '@/components/create-table-button'
+import { DraggableTables } from '@/components/draggable-tables'
+import { ThemeSelector } from '@/components/theme-selector'
+import { Toaster } from '@/components/ui/sonner'
 import { selectAllTables } from '@/store'
 
 export default function App() {

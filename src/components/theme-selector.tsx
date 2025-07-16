@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { themes } from '@/lib/constants.ts'
+import { themes } from '@/lib/constants'
 import { useTheme } from '@/lib/theme-provider'
 
 export function ThemeSelector() {

@@ -22,9 +22,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger
-} from '@/components/ui/alert-dialog.tsx'
-import { Button } from '@/components/ui/button.tsx'
-import { Input } from '@/components/ui/input.tsx'
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -37,8 +37,8 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent
-} from '@/components/ui/tooltip.tsx'
-import type { Table as TableType } from '@/lib/types.ts'
+} from '@/components/ui/tooltip'
+import type { Table as TableType } from '@/lib/types'
 import {
   copyTable,
   removeTable,
@@ -46,7 +46,7 @@ import {
   updateTableCell
 } from '@/store'
 
-import { DataTableColumnHeader } from './data-table-column-header.tsx'
+import { DataTableColumnHeader } from './data-table-column-header'
 
 interface DataTableProps {
   tableId: TableType['id']

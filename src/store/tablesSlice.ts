@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit'
 
 import { Cell, Table } from '@/lib/types'
-import { RootState } from '@/store/types.ts'
+import { RootState } from '@/store/types'
 
 const tables: Table[] = []
 

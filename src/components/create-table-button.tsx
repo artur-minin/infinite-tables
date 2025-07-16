@@ -7,26 +7,21 @@ import { Plus, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button.tsx'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu.tsx'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem
-} from '@/components/ui/form.tsx'
-import { Input } from '@/components/ui/input.tsx'
+} from '@/components/ui/dropdown-menu'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@/components/ui/select.tsx'
+} from '@/components/ui/select'
 import { addTable, useAppDispatch } from '@/store'
 
 const ADDRESS_TYPES = ['City', 'Street', 'Home'] as const

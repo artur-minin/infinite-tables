@@ -1,4 +1,4 @@
-import { rootReducer, store } from '@/store/store.ts'
+import { rootReducer, store } from '@/store/store'
 
 export type RootState = ReturnType<typeof rootReducer>
 

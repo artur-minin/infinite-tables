@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from '@/lib/theme-provider'
 import { store } from '@/store'
 
-import App from './App.tsx'
+import App from './App'
 
 import './index.css'
 
