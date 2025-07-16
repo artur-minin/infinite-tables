@@ -19,7 +19,6 @@ export function DraggableTables() {
   )
   const swapyRef = useRef<Swapy | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  console.log({ tables, slottedItems })
 
   useEffect(() => {
     utils.dynamicSwapy(

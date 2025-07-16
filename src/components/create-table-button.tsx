@@ -46,11 +46,7 @@ const formSchema = z.object({
 
 type CreateTableFormValues = z.infer<typeof formSchema>
 
-export type CreateTableButtonProps = {
-  onCreate?: (values: CreateTableFormValues) => void
-}
-
-export const CreateTableButton = ({ onCreate }: CreateTableButtonProps) => {
+export const CreateTableButton = () => {
   const dispatch = useAppDispatch()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -92,7 +88,7 @@ export const CreateTableButton = ({ onCreate }: CreateTableButtonProps) => {
       richColors: true
     })
 
-    onCreate?.(values)
+    toast.success('Table has been created')
     form.reset()
   }
 
@@ -111,14 +107,14 @@ export const CreateTableButton = ({ onCreate }: CreateTableButtonProps) => {
         <Button
           variant="outline"
           size="default"
-          className="cursor-pointer capitalize"
+          className="bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:text-secondary-foreground rounded-primary h-auto cursor-pointer px-16 py-4 capitalize"
         >
           create table
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
-        className="px-4 py-5"
+        className="rounded-primary px-4 py-5"
         onCloseAutoFocus={(event) => event.preventDefault()}
         onInteractOutside={closeDropdown}
         onEscapeKeyDown={closeDropdown}
@@ -203,7 +199,10 @@ export const CreateTableButton = ({ onCreate }: CreateTableButtonProps) => {
               )}
             />
 
-            <Button type="submit" className="w-full cursor-pointer uppercase">
+            <Button
+              type="submit"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:text-secondary-foreground h-auto w-full cursor-pointer py-3 uppercase"
+            >
               add
             </Button>
           </form>

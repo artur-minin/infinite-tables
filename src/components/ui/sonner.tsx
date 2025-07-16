@@ -4,7 +4,7 @@ import { Toaster as Sonner, ToasterProps } from 'sonner'
 
 import { useTheme } from '@/lib/theme-provider'
 
-const Toaster = ({ ...props }: ToasterProps) => {
+export const Toaster = ({ ...props }: ToasterProps) => {
   const { theme } = useTheme()
 
   return (
@@ -13,14 +13,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       style={
         {
-          '--normal-bg': 'var(--popover)',
-          '--normal-text': 'var(--popover-foreground)',
-          '--normal-border': 'var(--border)'
+          '--normal-bg': 'var(--secondary)',
+          '--normal-text': 'var(--secondary-foreground)',
+          '--normal-border': 'var(--border)',
+          '--border-radius': 'var(--radius-primary)'
         } as CSSProperties
       }
       {...props}
     />
   )
 }
-
-export { Toaster }

@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'lucide-react'
+import { Bot, Coffee, Flower, Moon, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -11,7 +11,7 @@ import { themes } from '@/lib/constants.ts'
 import { useTheme } from '@/lib/theme-provider'
 
 export function ThemeSelector() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   return (
     <DropdownMenu>
@@ -21,9 +21,12 @@ export function ThemeSelector() {
           size="icon"
           className="cursor-pointer capitalize"
         >
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">toggle theme</span>
+          {theme === 'light' && <Sun className="h-[1.2rem] w-[1.2rem]" />}
+          {theme === 'dark' && <Moon className="h-[1.2rem] w-[1.2rem]" />}
+          {theme === 'rose' && <Flower className="h-[1.2rem] w-[1.2rem]" />}
+          {theme === 'coffee' && <Coffee className="h-[1.2rem] w-[1.2rem]" />}
+          {theme === 'cyberpunk' && <Bot className="h-[1.2rem] w-[1.2rem]" />}
+          <span className="sr-only">select theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

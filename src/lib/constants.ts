@@ -1,1 +1,1 @@
-export const themes = ['dark', 'light', 'system', 'violet'] as const
+export const themes = ['light', 'dark', 'rose', 'coffee', 'cyberpunk'] as const

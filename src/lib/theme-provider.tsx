@@ -8,7 +8,7 @@ import {
 
 import { themes } from '@/lib/constants'
 
-type Theme = (typeof themes)[number] // "dark" | "light" | "system" | "violet"
+type Theme = (typeof themes)[number]
 
 type ThemeProviderProps = {
   children: ReactNode
@@ -22,7 +22,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'light',
   setTheme: () => null
 }
 
@@ -30,7 +30,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultTheme = 'light',
   storageKey = 'vite-ui-theme',
   ...props
 }: ThemeProviderProps) {
@@ -41,17 +41,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement
 
-    root.classList.remove(...themes.filter((theme) => theme !== 'system'))
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-
-      root.classList.add(systemTheme)
-      return
-    }
+    root.classList.remove(...themes)
 
     root.classList.add(theme)
   }, [theme])
