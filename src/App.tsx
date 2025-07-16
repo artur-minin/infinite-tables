@@ -7,28 +7,22 @@ import Table, { Person } from '@/components/Table'
 
 const defaultData: Person[] = [
   {
-    firstName: 'tanner',
-    lastName: 'linsley',
+    name: 'tanner',
+    surname: 'linsley',
     age: 24,
-    visits: 100,
-    status: 'In Relationship',
-    progress: 50
+    city: 'New York'
   },
   {
-    firstName: 'tandy',
-    lastName: 'miller',
+    name: 'tandy',
+    surname: 'miller',
     age: 40,
-    visits: 40,
-    status: 'Single',
-    progress: 80
+    city: 'Los Angeles'
   },
   {
-    firstName: 'joe',
-    lastName: 'dirte',
+    name: 'joe',
+    surname: 'dirte',
     age: 45,
-    visits: 20,
-    status: 'Complicated',
-    progress: 10
+    city: 'New Jersey'
   }
 ]
 
@@ -38,45 +32,33 @@ function App() {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor('firstName', {
-        cell: (info) => info.getValue(),
-        footer: (info) => info.column.id
+      columnHelper.accessor('name', {
+        header: () => <span>Name</span>
       }),
-      columnHelper.accessor((row) => row.lastName, {
-        id: 'lastName',
-        cell: (info) => <i>{info.getValue()}</i>,
-        header: () => <span>Last Name</span>,
-        footer: (info) => info.column.id
+      columnHelper.accessor('surname', {
+        header: () => <span>Surname</span>
       }),
       columnHelper.accessor('age', {
-        header: () => 'Age',
-        cell: (info) => info.renderValue(),
-        footer: (info) => info.column.id
+        header: () => <span>Age</span>
       }),
-      columnHelper.accessor('visits', {
-        header: () => <span>Visits</span>,
-        footer: (info) => info.column.id
-      }),
-      columnHelper.accessor('status', {
-        header: 'Status',
-        footer: (info) => info.column.id
-      }),
-      columnHelper.accessor('progress', {
-        header: 'Profile Progress',
-        footer: (info) => info.column.id
+      columnHelper.accessor('city', {
+        header: () => <span>City</span>
       })
     ],
     [columnHelper]
   )
 
   return (
-    <>
-      {data && (
-        <div className="p-2">
+    <div className="flex flex-wrap gap-[var(--gap-between-columns)] p-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={`column-${i}`}
+          className="flex-basis[var(--one-column-width)] flex-1"
+        >
           <Table columns={columns} data={data} />
         </div>
-      )}
-    </>
+      ))}
+    </div>
   )
 }
 

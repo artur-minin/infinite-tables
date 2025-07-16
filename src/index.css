@@ -1,1 +1,10 @@
 @import 'tailwindcss';
+
+:root {
+  --max-columns-per-row: 3;
+  --gap-between-columns: 1rem;
+  --one-column-width: calc(
+    (100% - ((var(--max-columns-per-row) - 1) * var(--gap-between-columns))) /
+      var(--max-columns-per-row)
+  );
+}

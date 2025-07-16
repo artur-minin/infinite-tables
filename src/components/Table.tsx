@@ -6,12 +6,10 @@ import {
 } from '@tanstack/react-table'
 
 export type Person = {
-  firstName: string
-  lastName: string
+  name: string
+  surname: string
   age: number
-  visits: number
-  status: string
-  progress: number
+  city: string
 }
 
 // now create types for props for this Table component(https://tanstack.com/table/latest/docs/framework/react/examples/sub-components)
@@ -59,22 +57,6 @@ export default function Table({ columns, data }: TableProps<Person>) {
           </tr>
         ))}
       </tbody>
-      <tfoot>
-        {table.getFooterGroups().map((footerGroup) => (
-          <tr key={footerGroup.id}>
-            {footerGroup.headers.map((header) => (
-              <th key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.footer,
-                      header.getContext()
-                    )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </tfoot>
     </table>
   )
 }
