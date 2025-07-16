@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
   TooltipContent
 } from '@/components/ui/tooltip.tsx'
+import type { Table as TableType } from '@/lib/types.ts'
 import {
   copyTable,
   removeTable,
@@ -47,9 +48,9 @@ import {
 import { DataTableColumnHeader } from './data-table-column-header.tsx'
 
 interface DataTableProps {
-  tableId: string
-  onCopy?: (tableId: string) => void
-  onDelete?: (tableId: string) => void
+  tableId: TableType['id']
+  onCopy?: (tableId: TableType['id']) => void
+  onDelete?: (tableId: TableType['id']) => void
 }
 
 export const DataTable = memo(function DataTable({

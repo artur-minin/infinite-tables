@@ -4,23 +4,18 @@ import {
   createSlice
 } from '@reduxjs/toolkit'
 
+import { Cell, Table } from '@/lib/types'
 import { RootState } from '@/store/types.ts'
-
-export type Table = {
-  id: string
-  position: number
-  cells: (string | number)[][]
-}
 
 const tables: Table[] = [
   {
     id: '123',
-    position: 0,
+    position: 2,
     cells: [
       ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', 24, 'New York'],
-      ['tandy', 'miller', 40, 'Los Angeles'],
-      ['joe', 'dirte', 45, 'New Jersey']
+      ['tanner', 'linsley', '11', 'New York'],
+      ['tandy', 'miller', '11', 'Los Angeles'],
+      ['joe', 'dirte', '11', 'New Jersey']
     ]
   },
   {
@@ -28,19 +23,19 @@ const tables: Table[] = [
     position: 1,
     cells: [
       ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', 24, 'New York'],
-      ['tandy', 'miller', 40, 'Los Angeles'],
-      ['joe', 'dirte', 45, 'New Jersey']
+      ['tanner', 'linsley', '22', 'New York'],
+      ['tandy', 'miller', '22', 'Los Angeles'],
+      ['joe', 'dirte', '22', 'New Jersey']
     ]
   },
   {
     id: '678',
-    position: 2,
+    position: 0,
     cells: [
       ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', 24, 'New York'],
-      ['tandy', 'miller', 40, 'Los Angeles'],
-      ['joe', 'dirte', 45, 'New Jersey']
+      ['tanner', 'linsley', '33', 'New York'],
+      ['tandy', 'miller', '33', 'Los Angeles'],
+      ['joe', 'dirte', '33', 'New Jersey']
     ]
   },
   {
@@ -48,9 +43,9 @@ const tables: Table[] = [
     position: 3,
     cells: [
       ['name', 'surname', 'age', 'city'], // Column names
-      ['tanner', 'linsley', 24, 'New York'],
-      ['tandy', 'miller', 40, 'Los Angeles'],
-      ['joe', 'dirte', 45, 'New Jersey']
+      ['tanner', 'linsley', '44', 'New York'],
+      ['tandy', 'miller', '44', 'Los Angeles'],
+      ['joe', 'dirte', '44', 'New Jersey']
     ]
   }
 ]
@@ -64,7 +59,7 @@ export const tablesSlice = createSlice({
   name: 'tables',
   initialState: tablesAdapter.setAll(tablesAdapter.getInitialState(), tables),
   reducers: (create) => ({
-    addTable: create.reducer((state, action: PayloadAction<string[]>) => {
+    addTable: create.reducer((state, action: PayloadAction<Cell[]>) => {
       const tableHeader = action.payload
       const tableBody = Array(3)
         .fill(null)
@@ -76,29 +71,54 @@ export const tablesSlice = createSlice({
         cells: [tableHeader, ...tableBody]
       })
     }),
-    copyTable: create.reducer((state, action: PayloadAction<string>) => {
-      const originalTable = state.entities[action.payload]
-      if (originalTable) {
-        console.log({ originalTablePosition: originalTable.position })
+    copyTable: create.reducer((state, action: PayloadAction<Table['id']>) => {
+      const copiedTable = state.entities[action.payload]
+      if (copiedTable) {
+        // Get all tables that need position increment
+        const tablesToUpdate = Object.values(state.entities)
+          .filter((table) => table && table.position > copiedTable.position)
+          .map((table) => ({
+            id: table.id,
+            changes: { position: table.position + 1 }
+          }))
+        tablesAdapter.updateMany(state, tablesToUpdate)
+
+        // Create and add the new table
         const newTable: Table = {
-          ...originalTable,
+          ...copiedTable,
           id: Date.now().toString(),
-          position: originalTable.position + 1
+          position: copiedTable.position + 1
         }
         return tablesAdapter.addOne(state, newTable)
       }
-
       return state
     }),
-    removeTable: tablesAdapter.removeOne,
+    removeTable: create.reducer((state, action: PayloadAction<Table['id']>) => {
+      const tableId = action.payload
+      const deletedTable = state.entities[tableId]
+      if (!deletedTable) {
+        return state
+      }
+
+      // Get all tables that need position decrement
+      const tablesToUpdate = Object.values(state.entities)
+        .filter((table) => table && table.position > deletedTable.position)
+        .map((table) => ({
+          id: table.id,
+          changes: { position: table.position - 1 }
+        }))
+      tablesAdapter.updateMany(state, tablesToUpdate)
+
+      return tablesAdapter.removeOne(state, tableId)
+    }),
     updateTableCell: create.reducer(
       (
         state,
         action: PayloadAction<{
-          tableId: string
+          tableId: Table['id']
           rowIndex: number
           columnIndex: number
-          value: string | number
+          value: Cell
         }>
       ) => {
         const {
@@ -135,8 +155,8 @@ export const tablesSlice = createSlice({
       (
         state,
         action: PayloadAction<{
-          tableId1: string
-          tableId2: string
+          tableId1: Table['id']
+          tableId2: Table['id']
         }>
       ) => {
         const { tableId1, tableId2 } = action.payload
@@ -164,12 +184,13 @@ export const {
   copyTable
 } = tablesSlice.actions
 
-export const selectTableDataById = (tableId: string) => (state: RootState) => {
-  const table = selectTableById(state, tableId)
-  if (!table) return []
+export const selectTableDataById =
+  (tableId: Table['id']) => (state: RootState) => {
+    const table = selectTableById(state, tableId)
+    if (!table) return []
 
-  return table.cells
-}
+    return table.cells
+  }
 
 export const { selectById: selectTableById, selectAll: selectAllTables } =
   tablesAdapter.getSelectors((state: RootState) => state.tables)
