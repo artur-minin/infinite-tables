@@ -61,7 +61,6 @@ export default function Table({ columns, initialData }: TableProps<Person>) {
       updateData: (rowIndex, columnId, value) => {
         setData((old) =>
           old.map((row, index) => {
-            console.log({ value, columnId, rowIndex })
             if (index === rowIndex) {
               return {
                 ...old[rowIndex]!,
