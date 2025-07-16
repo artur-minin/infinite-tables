@@ -28,12 +28,15 @@ export default function Table({ columns, data }: TableProps<Person>) {
   })
 
   return (
-    <table>
+    <table className="w-full border-collapse">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
+          <tr key={headerGroup.id} className="bg-blue-700 text-white">
             {headerGroup.headers.map((header) => (
-              <th key={header.id}>
+              <th
+                key={header.id}
+                className="border border-gray-200 p-3 text-left font-medium"
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(
@@ -47,9 +50,9 @@ export default function Table({ columns, data }: TableProps<Person>) {
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
+          <tr key={row.id} className="bg-white">
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>
+              <td key={cell.id} className="border border-gray-200 p-3">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
