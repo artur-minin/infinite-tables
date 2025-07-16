@@ -93,6 +93,10 @@ export const DataTable = memo(function DataTable({
       }) => {
         const initialValue = getValue<string>()
         const onBlur = (event: FocusEvent<HTMLInputElement>) => {
+          if (initialValue === event.target.value) {
+            return
+          }
+
           dispatch(
             updateTableCell({
               tableId: tableId,
@@ -136,7 +140,7 @@ export const DataTable = memo(function DataTable({
             {isLastColumn && (
               <div className="flex items-center gap-1">
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       className="cursor-pointer"
@@ -153,7 +157,7 @@ export const DataTable = memo(function DataTable({
                 <AlertDialog>
                   <AlertDialogTrigger>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild>
                         <Button variant="ghost" className="cursor-pointer">
                           <Trash className="size-4" />
                         </Button>

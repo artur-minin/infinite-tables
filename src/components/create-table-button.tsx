@@ -107,7 +107,7 @@ export const CreateTableButton = ({ onCreate }: CreateTableButtonProps) => {
 
   return (
     <DropdownMenu open={isDropdownOpen}>
-      <DropdownMenuTrigger onClick={openDropdown}>
+      <DropdownMenuTrigger asChild onClick={openDropdown}>
         <Button
           variant="outline"
           size="default"
