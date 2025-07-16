@@ -7,85 +7,38 @@ import { SlotItemMapArray, Swapy, utils, createSwapy } from 'swapy'
 import { DataTable } from '@/components/data-table.tsx'
 import { ProfileForm } from '@/components/example-form.tsx'
 import { ModeToggle } from '@/components/mode-toggle.tsx'
-import type { Person } from '@/components/Table'
 import { Button } from '@/components/ui/button.tsx'
 import {
   DropdownMenu,
   DropdownMenuContent
 } from '@/components/ui/dropdown-menu.tsx'
-import { selectAllTables, selectTotalTables } from '@/store'
-
-const defaultData: Person[] = [
-  {
-    name: 'tanner',
-    surname: 'linsley',
-    age: 24,
-    city: 'New York'
-  },
-  {
-    name: 'tandy',
-    surname: 'miller',
-    age: 40,
-    city: 'Los Angeles'
-  },
-  {
-    name: 'joe',
-    surname: 'dirte',
-    age: 45,
-    city: 'New Jersey'
-  }
-]
-
-type TableType = {
-  id: number
-  data: Person[]
-}
-
-const tables: TableType[] = [
-  {
-    id: 123,
-    data: defaultData
-  },
-  {
-    id: 345,
-    data: defaultData
-  },
-  {
-    id: 678,
-    data: defaultData
-  },
-  {
-    id: 912,
-    data: defaultData
-  }
-]
+import { selectAllTables, swapTablePositions, useAppDispatch } from '@/store'
 
 function App() {
   const [items, setItems] = useState<TableType[]>(tables)
+  const dispatch = useAppDispatch()
+  const tables = useSelector(selectAllTables)
+
   const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(
-    utils.initSlotItemMap(items, 'id')
+    utils.initSlotItemMap(tables, 'id')
   )
   const slottedItems = useMemo(
-    () => utils.toSlottedItems(items, 'id', slotItemMap),
-    [items, slotItemMap]
+    () => utils.toSlottedItems(tables, 'id', slotItemMap),
+    [tables, slotItemMap]
   )
   const swapyRef = useRef<Swapy | null>(null)
-
   const containerRef = useRef<HTMLDivElement>(null)
-
-  const tablesTotalRedux = useSelector(selectTotalTables)
-  const tablesRedux = useSelector(selectAllTables)
 
   useEffect(
     () =>
       utils.dynamicSwapy(
         swapyRef.current,
-        items,
+        tables,
         'id',
         slotItemMap,
         setSlotItemMap
       ),
-    [items]
+    [tables]
   )
 
   useEffect(() => {
@@ -126,8 +79,7 @@ function App() {
         className="flex flex-wrap gap-[var(--gap-between-tables)] p-4"
       >
         {slottedItems.map(({ slotId, itemId, item }) => {
-          console.log({ slotId, itemId, item })
-          return (
+          return item?.id ? (
             <div
               key={slotId}
               data-swapy-slot={slotId}
@@ -138,10 +90,10 @@ function App() {
                 data-swapy-item={itemId}
                 className="[&[data-swapy-dragging]]:cursor-grabbing"
               >
-                <DataTable data={defaultData} />
+                <DataTable tableId={item.id} />
               </div>
             </div>
-          )
+          ) : null
         })}
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   ColumnDef,
@@ -23,41 +24,62 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { selectTableDataById, updateTableCell } from '@/store'
 
-interface DataTableProps<TData> {
-  columns?: string[]
-  data: TData[]
+interface DataTableProps {
+  tableId: string
 }
 
-export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
+export function DataTable({ tableId }: DataTableProps) {
+  const dispatch = useDispatch()
+
   const [sorting, setSorting] = useState<SortingState>([])
+  const tableData = useSelector(selectTableDataById(tableId))
 
-  // const columnsFormatted = columns.map((name) => ({
-  //   accessorKey: name
-  // }))
+  const tableColumns = useMemo(() => tableData[0] || [], [tableData])
+  const tableHeaderCells = useMemo(() => {
+    return tableColumns.map((columnName) => ({
+      accessorKey: columnName.toString()
+    }))
+  }, [tableColumns])
 
-  const columnsFormatted = (Object.keys(data?.[0] ?? {}) ?? []).map((name) => ({
-    accessorKey: name
-  }))
+  const tableBodyCells = useMemo(() => {
+    return (tableData.slice(1) || []).map((row) => {
+      return row.reduce<Record<string, string | number>>(
+        (acc, cellData, cellIndex) => {
+          acc[tableColumns[cellIndex]] = cellData
+          return acc
+        },
+        {}
+      )
+    })
+  }, [tableData, tableColumns])
 
-  const defaultColumn = useMemo<Partial<ColumnDef<TData>>>(
+  const defaultColumn = useMemo<
+    Partial<ColumnDef<Record<string, string | number>>>
+  >(
     () => ({
       cell: ({
         getValue,
         row: { index: rowIndex },
-        column: { id: columnId, getIndex: getColumnIndex },
-        table
+        column: { getIndex: getColumnIndex }
       }) => {
-        const initialValue = getValue()
+        const initialValue = getValue<string>()
         const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-          const columnIndex = getColumnIndex()
-          table.options.meta?.updateData(rowIndex, columnId, event.target.value)
+          dispatch(
+            updateTableCell({
+              tableId: Number(tableId),
+              rowIndex: rowIndex + 1,
+              columnIndex: getColumnIndex(),
+              value: event.target.value
+            })
+          )
         }
 
         return (
           <Input
             className="min-h-12 w-full"
-            defaultValue={initialValue as string}
+            defaultValue={initialValue}
             onBlur={onBlur}
           />
         )
@@ -89,12 +111,12 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
         )
       }
     }),
-    []
+    [dispatch, tableId]
   )
 
   const table = useReactTable({
-    data,
-    columns: columnsFormatted,
+    columns: tableHeaderCells,
+    data: tableBodyCells,
     defaultColumn,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -142,7 +164,7 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
           ) : (
             <TableRow>
               <TableCell
-                colSpan={columnsFormatted.length}
+                colSpan={tableHeaderCells.length}
                 className="h-24 text-center"
               >
                 No results.
