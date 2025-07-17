@@ -40,7 +40,7 @@ const defaultColumn: Partial<ColumnDef<Person>> = {
 
     return (
       <input
-        className="w-full"
+        className="min-h-12 w-full"
         value={value as string}
         onChange={(e) => setValue(e.target.value)}
         onBlur={onBlur}
@@ -79,19 +79,22 @@ export default function Table({ columns, initialData }: TableProps<Person>) {
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className="bg-blue-700 text-white">
-            {headerGroup.headers.map((header) => (
-              <th
-                key={header.id}
-                className="border border-gray-200 p-3 text-left font-medium"
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-              </th>
-            ))}
+            {headerGroup.headers.map((header, ...rest) => {
+              console.log({ header, rest })
+              return (
+                <th
+                  key={header.id}
+                  className="border border-gray-200 p-3 text-left font-medium"
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </th>
+              )
+            })}
           </tr>
         ))}
       </thead>
@@ -99,7 +102,7 @@ export default function Table({ columns, initialData }: TableProps<Person>) {
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id} className="bg-white">
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className="border border-gray-200 p-3">
+              <td key={cell.id} className="border border-gray-200">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}

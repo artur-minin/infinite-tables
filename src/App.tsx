@@ -1,9 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import { createColumnHelper } from '@tanstack/react-table'
+import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { SlotItemMapArray, Swapy, utils, createSwapy } from 'swapy'
 
-import Table, { Person } from '@/components/Table'
+import { DataTable } from '@/components/data-table.tsx'
+import { ProfileForm } from '@/components/example-form.tsx'
+import { ModeToggle } from '@/components/mode-toggle.tsx'
+import type { Person } from '@/components/Table'
+import { Button } from '@/components/ui/button.tsx'
+import {
+  DropdownMenu,
+  DropdownMenuContent
+} from '@/components/ui/dropdown-menu.tsx'
+import { selectAllTables, selectTotalTables } from '@/store'
 
 const defaultData: Person[] = [
   {
@@ -26,69 +36,52 @@ const defaultData: Person[] = [
   }
 ]
 
-type Table = {
+type TableType = {
   id: number
-  name: string
+  data: Person[]
 }
 
-const tables: Table[] = [
+const tables: TableType[] = [
   {
-    id: 1,
-    name: 'Table 1'
+    id: 123,
+    data: defaultData
   },
   {
-    id: 2,
-    name: 'Table 2'
+    id: 345,
+    data: defaultData
   },
   {
-    id: 3,
-    name: 'Table 3'
+    id: 678,
+    data: defaultData
   },
   {
-    id: 4,
-    name: 'Table 4'
+    id: 912,
+    data: defaultData
   }
 ]
 
 function App() {
-  const columnHelper = createColumnHelper<Person>()
-
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor('name', {
-        header: () => <span>Name</span>
-      }),
-      columnHelper.accessor('surname', {
-        header: () => <span>Surname</span>
-      }),
-      columnHelper.accessor('age', {
-        header: () => <span>Age</span>
-      }),
-      columnHelper.accessor('city', {
-        header: () => <span>City</span>
-      })
-    ],
-    [columnHelper]
-  )
-
-  const [items, setItems] = useState<Table[]>(tables)
+  const [items, setItems] = useState<TableType[]>(tables)
   const [slotItemMap, setSlotItemMap] = useState<SlotItemMapArray>(
-    utils.initSlotItemMap(items, 'name')
+    utils.initSlotItemMap(items, 'id')
   )
   const slottedItems = useMemo(
-    () => utils.toSlottedItems(items, 'name', slotItemMap),
+    () => utils.toSlottedItems(items, 'id', slotItemMap),
     [items, slotItemMap]
   )
   const swapyRef = useRef<Swapy | null>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
+  const tablesTotalRedux = useSelector(selectTotalTables)
+  const tablesRedux = useSelector(selectAllTables)
+
   useEffect(
     () =>
       utils.dynamicSwapy(
         swapyRef.current,
         items,
-        'name',
+        'id',
         slotItemMap,
         setSlotItemMap
       ),
@@ -112,25 +105,45 @@ function App() {
   }, [])
 
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-wrap gap-[var(--gap-between-tables)] p-4"
-    >
-      {slottedItems.map(({ slotId, itemId, item }) => (
-        <div
-          key={slotId}
-          data-swapy-slot={slotId}
-          className="min-w-[var(--table-width)] flex-1 cursor-grab [&[data-swapy-highlighted]]:bg-green-200"
-        >
-          <div
-            key={itemId}
-            data-swapy-item={itemId}
-            className="[&[data-swapy-dragging]]:cursor-grabbing"
-          >
-            <Table columns={columns} initialData={defaultData} />
-          </div>
-        </div>
-      ))}
+    <div>
+      <div className="flex items-center justify-between p-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="outline" size="default" className="capitalize">
+              create table
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="px-4 py-5">
+            <ProfileForm />
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <ModeToggle />
+      </div>
+
+      <div
+        ref={containerRef}
+        className="flex flex-wrap gap-[var(--gap-between-tables)] p-4"
+      >
+        {slottedItems.map(({ slotId, itemId, item }) => {
+          console.log({ slotId, itemId, item })
+          return (
+            <div
+              key={slotId}
+              data-swapy-slot={slotId}
+              className="min-w-[var(--table-width)] flex-1 cursor-grab [&[data-swapy-highlighted]]:bg-green-200"
+            >
+              <div
+                key={itemId}
+                data-swapy-item={itemId}
+                className="[&[data-swapy-dragging]]:cursor-grabbing"
+              >
+                <DataTable data={defaultData} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
